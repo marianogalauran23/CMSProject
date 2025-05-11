@@ -15,7 +15,6 @@ function removeBlur() {
     container.style.transition = "transform 0.3s ease-in-out";
 }
 
-// Track if mouse is inside the container
 let isInside = false;
 
 document.addEventListener('mousemove', (e) => {

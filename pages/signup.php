@@ -44,7 +44,7 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <input type="password" name="confirmPassword" placeholder="Confirm Password" required>
                     <button type="submit" id="submit-button">Sign-Up</button>
                     <div>
-                        <p id="toggle-signup-text">Already have an account? <a href="javascript:void(0);"
+                        <p id="toggle-signup-text">Already have an account? <a href="../index.php"
                                 id="toggle-signup-link">Log-In</a></p>
                     </div>
                 </form>

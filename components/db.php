@@ -45,7 +45,7 @@ function registerUser($first_name, $last_name, $email, $username, $password, $co
     $hashed_password = password_hash($password, PASSWORD_BCRYPT);
 
     $sql = "INSERT INTO users (first_name, last_name, email, username, password, role, created_at) 
-            VALUES (?, ?, ?, ?, ?, 'user', NOW())";
+            VALUES (?, ?, ?, ?, ?, 'subscriber', NOW())";
 
     $stmt = mysqli_prepare($GLOBALS['conn'], $sql);
     mysqli_stmt_bind_param($stmt, "sssss", $first_name, $last_name, $email, $username, $hashed_password);
