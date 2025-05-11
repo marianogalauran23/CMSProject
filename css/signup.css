@@ -1,0 +1,126 @@
+@import url('https://fonts.googleapis.com/css2?family=Open+Sans:ital,wght@0,300..800;1,300..800&display=swap');
+
+* {
+    user-select: none;
+}
+
+body {
+    font-family: "Open Sans", sans-serif;
+    margin: 0;
+    font-optical-sizing: auto;
+    font-weight: 400;
+    font-style: normal;
+    color: white;
+}
+
+.background {
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 100%;
+    background-image: url('../assets/login_pic.jpg');
+    background-size: cover;
+    background-position: center;
+    background-repeat: no-repeat;
+    z-index: -999;
+    filter: none;
+    transition: filter 0.3s ease, transform 0.3s ease;
+    transform-origin: center center;
+}
+
+.login-container {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 100%;
+    width: 100%;
+}
+
+.login-parent {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    height: 90vh; /* Adjust this value as necessary */
+}
+
+.overlay_container {
+    width: 100%;
+    max-width: 450px;
+    background: #3b184780;
+    padding: 30px;
+    border-radius: 4vh;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.1);
+    backdrop-filter: blur(10px);
+}
+
+form {
+    width: 100%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+}
+
+form input {
+    width: 90%;
+    height: 2.5vh;
+    background-color: #2c133a77;
+    color:#d9bde3;
+    padding: 10px;
+    margin: 10px 0;
+    border: none;
+    border-radius: 19px;
+    transition: box-shadow 0.3s ease-in-out;
+}
+
+form input::placeholder {
+    color: #d9bde3;
+}
+
+form input:hover{
+    box-shadow: 0 0px 20px #d9bde3;
+}
+
+form input:focus {
+    outline: none;
+}
+
+form button {
+    background-color: #d9bde3;
+    margin-top: 3vh;
+    height: 6vh;
+    width: 12vh;
+    color: #3c2946;
+    cursor: pointer;
+    border: none;
+    border-radius: 12vh;
+    font-size: 16px;
+    transform: translateY(0px);
+    transition: box-shadow 0.3s ease-in-out, background-color 0.3s ease-in-out, color 0.3s ease-in-out, transform 0.3s ease-in-out
+    , font-size 0.3s ease-in-out, font-style 0.3s ease-in-out;
+}
+
+form button:hover {
+    background-color: #3c2946;
+    color: #d9bde3;
+    font-size: 18px;
+    font-style: bold;
+    box-shadow: 0 0px 20px #d9bde3;
+    transform: translateY(-5px);
+}
+
+#toggle-signup-text {
+    text-align: center;
+    margin-top: 10px;
+}
+
+#toggle-signup-text a {
+    color: #d9bde3;
+    text-decoration: none;
+}
+
+#toggle-signup-text a:hover {
+    text-decoration: underline;
+}
