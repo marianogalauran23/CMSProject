@@ -60,7 +60,7 @@ nav ul li a:hover {
 .hero{
     display: flex;
     padding: 12vh;
-    margin-top: 13vh;
+    margin-top: 8vh;
     margin-bottom: 3vh;
     justify-content: center;
     align-items: center;
@@ -119,6 +119,31 @@ nav ul li a:hover {
     transition: background-color 0.3s ease-in-out;
 }
 
+.social-buttons {
+    display: flex;
+    justify-content: center;
+    gap: 30px;
+    margin-top: 30px;
+    margin-bottom: 40px;
+}
+
+.social-buttons input[type="image"] {
+    width: 50px;
+    height: 50px;
+    border-radius: 50%;
+    transition: transform 0.2s ease, box-shadow 0.2s ease;
+    cursor: pointer;
+    border: none;
+    background-color: transparent;
+    box-shadow: 0 2px 6px rgba(0,0,0,0.1);
+}
+
+.social-buttons input[type="image"]:hover {
+    transform: scale(1.1);
+    box-shadow: 0 4px 12px rgba(0,0,0,0.2);
+}
+
+
 .hero h1{
     margin: 0;
     margin-bottom: 38px;
@@ -129,8 +154,8 @@ nav ul li a:hover {
     background-color: #fffae834;
     color:#ffeedf;
     width: 100%;
-    height: 30%;
-    padding: 10px;
+    height: 40%;
+    padding: 15px;
     border-radius: 47px;
     font-size: 16px;
     border: none;
@@ -142,6 +167,12 @@ nav ul li a:hover {
     color: #ffeedf;
     opacity: 0.7;
 }
+
+#login-form input:focus {
+    outline: none;
+    box-shadow: 0 0 5px #ffeedf;
+}
+
 #login-buttons {
     padding: 10px;
     justify-items: center;
@@ -153,7 +184,7 @@ nav ul li a:hover {
     margin-bottom: 15px;
     color: #ffeedf;
     top: 12px;
-    width: 70%;
+    width: 50%;
     border: none;
     padding: 10px 20px;
     font-size: 20px;

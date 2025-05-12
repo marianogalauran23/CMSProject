@@ -34,3 +34,46 @@ document.addEventListener('mousemove', (e) => {
         }
     }
 });
+
+ window.fbAsyncInit = function() {
+        FB.init({
+            appId      : '670621425725278', 
+            cookie     : true,
+            xfbml      : true,
+            version    : 'v10.0'
+        });
+
+        document.getElementById('facebook-button').onclick = function(event) {
+            event.preventDefault();
+            FB.login(function(response) {
+                if (response.authResponse) {
+                    FB.api('/me?fields=name,email', function(response) {
+                        var userData = {
+                            name: response.name,
+                            email: response.email,
+                            facebook_id: response.id
+                        };
+
+                        fetch('auth_facebook.php', {
+                            method: 'POST',
+                            headers: {
+                                'Content-Type': 'application/json',
+                            },
+                            body: JSON.stringify(userData)
+                        })
+                        .then(response => response.json())
+                        .then(data => {
+                            if (data.success) {
+                                window.location.href = "./dashboard.php";
+                            } else {
+                                alert("Error: " + data.message);
+                            }
+                        })
+                        .catch(error => console.error('Error:', error));
+                    });
+                } else {
+                    alert("User login failed");
+                }
+            }, {scope: 'email'});
+        };
+    };
