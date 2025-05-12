@@ -74,10 +74,6 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                     <button type="submit" name="loginbtn" class="loginbtn">Login</button>
                     <button type="submit" name="signupbutton" class="signupbutton">No Account?</button>
                 </div>
-                <div class="social-buttons">
-                    <input type="image" id="google-button" src="./assets/google.png" alt="Google Sign-In">
-                    <input type="image" id="facebook-button" src="./assets/facebook.png" alt="Facebook Sign-In">
-                </div>
             </form>
         </div>
     </div>

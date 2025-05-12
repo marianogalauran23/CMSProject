@@ -48,23 +48,10 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
                                 id="toggle-signup-link">Log-In</a></p>
                     </div>
                 </form>
-                <div class="social-buttons">
-                    <div class="g-signin2" data-onsuccess="onSignIn">
-                        <form action="auth_google.php" method="POST">
-                            <input type="image" id="google-button" src="../assets/google.png" alt="Google Sign-In">
-                        </form>
-                    </div>
-
-                    <form id="facebook-form" method="POST">
-                        <input type="image" id="facebook-button" src="../assets/facebook.png" alt="Facebook Sign-In">
-                    </form>
-                </div>
             </div>
         </div>
     </div>
     <script src="../javascript/register.js"></script>
-    <script src="https://apis.google.com/js/platform.js" async defer></script>
-    <script src="https://connect.facebook.net/en_US/sdk.js"></script>
 </body>
 
 </html>
