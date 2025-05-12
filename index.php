@@ -2,7 +2,7 @@
 include __DIR__ . '/components/db.php';
 
 session_start();
-header("Cache-Control: no-cache, no-store, must-revalidate"); // HTTP 1.1
+header("Cache-Control: no-cache, no-store, must-revalidate");
 header("Pragma: no-cache");
 header("Expires: 0");
 
@@ -13,24 +13,25 @@ if ($_SERVER['REQUEST_METHOD'] == 'POST') {
     }
 
     if (isset($_POST['loginbtn'])) {
-
         if (isset($_POST['username']) && isset($_POST['password'])) {
             $username = $_POST['username'];
             $password = $_POST['password'];
 
-            if (getlogin($username, $password)) {
+            if (getlogin($username, $password))
                 $_SESSION['username'] = $username;
-                header('Location: pages/dashboard.php');
-                exit();
-            } else {
-                echo "<script>alert('Invalid username or password');</script>";
-            }
+            $_SESSION['user_id'] = gettingUserId($username, $password);
+
+            header('Location: pages/dashboard.php');
+            exit();
         } else {
-            echo "<script>alert('Username or password not set.');</script>";
+            echo "<script>alert('Invalid username or password');</script>";
         }
+    } else {
+        echo "<script>alert('Username or password not set.');</script>";
     }
 }
 ?>
+
 
 <!DOCTYPE html>
 <html lang="en">
