@@ -2,6 +2,11 @@
 include "../components/db.php";
 session_start();
 
+if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
 $username = $_SESSION['username'];
 $user_id = $_SESSION['user_id'];
 
@@ -24,7 +29,6 @@ $result = $stmt->get_result();
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>BrightDesk Dashboard</title>
     <link rel="stylesheet" href="../css/dashboard.css">
 </head>
@@ -55,11 +59,47 @@ $result = $stmt->get_result();
                 </div>
             <?php endwhile; ?>
 
-            <a href="add_project.php" class="add_card">
+            <!-- New Webpage Button (opens modal) -->
+            <div class="add_card" onclick="openAddProjectModal()">
                 <img src="../assets/add_light.png" alt="add" class="add_icon"
                     style="width: 45%; height: auto; max-width: 100vw;">
                 <h1>New Webpage</h1>
-            </a>
+            </div>
+        </div>
+    </div>
+    <div class="profile">
+        <div class="profile-image">
+            <img src="../assets/default_profile.png" alt="Profile" class="profile_icon">
+        </div>
+        <div class="overlay"></div>
+        <div class="profile-text">
+            <h2><?php echo htmlspecialchars($username); ?></h2>
+            <h3><?php
+            $stmt = $conn->prepare("SELECT first_name, last_name FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                echo htmlspecialchars($user['first_name'] . " " . $user['last_name']);
+            } else {
+                echo "Guest";
+            }
+            ?></h3>
+            <h3><?php
+            $stmt = $conn->prepare("SELECT bio FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                echo htmlspecialchars($user['bio']);
+            } else {
+                echo " ";
+            }
+            ?></h3>
+            <p><a href="../components/logout.php" style="color: red">Logout</a></p>
         </div>
     </div>
     <div id="cardMenu" class="context_menu">
@@ -67,6 +107,22 @@ $result = $stmt->get_result();
         <button onclick="editPage()">Edit</button>
         <button onclick="deletePage()">Delete</button>
     </div>
+
+    <!-- MODAL -->
+    <div id="addProjectModal" class="modal-overlay">
+        <div class="modal-card">
+            <h2>Add a New Project</h2>
+            <form id="addProjectForm">
+                <label for="title">Project Title:</label><br>
+                <input type="text" id="title" name="title" required><br><br>
+                <div class="modal-buttons">
+                    <button type="submit">Add</button>
+                    <button type="button" onclick="closeAddProjectModal()">Cancel</button>
+                </div>
+            </form>
+        </div>
+    </div>
+
     <script src="../javascript/dashboard.js"></script>
 </body>
 

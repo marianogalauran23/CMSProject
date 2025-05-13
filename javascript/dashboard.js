@@ -1,7 +1,15 @@
-window.addEventListener('popstate', function (event) {
-  window.location.href = 'index.php';
+const profilecontainer = document.querySelector('.profile');
+const profileImage = document.querySelector('.profile-image');
+const profileName = document.querySelector('.profile-text h2'); 
+const profiletext = document.querySelector('.profile-text');
+const profileDetails = document.querySelectorAll('.profile-text h3');
+
+// Back button behavior
+window.addEventListener('popstate', function () {
+    window.location.href = 'index.php';
 });
 
+// Context menu handling
 let selectedCard = null;
 
 function showCardMenu(event, card) {
@@ -57,3 +65,104 @@ function deletePage() {
 
     hideCardMenu();
 }
+
+function openAddProjectModal() {
+    document.getElementById('addProjectModal').style.display = 'flex';
+}
+
+function closeAddProjectModal() {
+    document.getElementById('addProjectModal').style.display = 'none';
+}
+
+document.addEventListener('DOMContentLoaded', () => {
+    const form = document.getElementById('addProjectForm');
+    if (!form) return;
+
+    form.addEventListener('submit', function (e) {
+        e.preventDefault();
+        const title = document.getElementById('title').value.trim();
+
+        if (title === "") {
+            alert("Please enter a project title.");
+            return;
+        }
+
+        fetch("add_project.php", {
+            method: "POST",
+            headers: {
+                "Content-Type": "application/x-www-form-urlencoded"
+            },
+            body: "title=" + encodeURIComponent(title)
+        })
+        .then(response => {
+            if (response.redirected) {
+                window.location.href = response.url; // Reload dashboard
+            } else {
+                return response.text();
+            }
+        })
+        .catch(error => {
+            console.error("Error:", error);
+            alert("Something went wrong. Please try again.");
+        });
+    });
+});
+
+function ProfileHighlight() {
+    profilecontainer.style.transform = "scale(1.08)";
+    profilecontainer.style.transition = "transform 0.2s ease-in-out";
+    profilecontainer.querySelector('.overlay').style.opacity = "1"; 
+    profilecontainer.querySelector('.overlay').style.transition = "opacity 0.3s ease-in-out";
+
+    profileName.style.transform = "translateY(-6px)";
+    profileName.style.color = "white";
+
+
+    profiletext.style.backgroundColor = "rgba(88, 81, 81, 0.25)";
+    profiletext.style.backdropFilter = "blur(10px)";
+    profiletext.style.transition = "background-color 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out";
+
+    setTimeout(() => {
+        profileDetails.forEach(item => {
+            item.style.transform = "translateY(-5px)";
+            item.style.color = "white";
+        });
+    }, 100);
+
+    profileName.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
+    profileDetails.forEach(item => {
+        item.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
+    });
+}
+
+function ProfileUnhighlight() {
+    profilecontainer.style.transform = "scale(1)";
+    profilecontainer.style.transition = "transform 0.3s ease-in-out";
+    profilecontainer.querySelector('.overlay').style.opacity = "0";
+    profilecontainer.querySelector('.overlay').style.transition = "opacity 0.3s ease-in-out";
+
+    profileName.style.transform = "translateY(0px)";
+    profileName.style.color = "black";
+
+    profiletext.style.backgroundColor = "rgba(255, 255, 255, 0.51)";
+     profiletext.style.backdropFilter = "blur(5px)";
+    profiletext.style.transition = "background-color 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out";
+
+    setTimeout(() => {
+        profileDetails.forEach(item => {
+            item.style.transform = "translateY(0px)";
+            item.style.color = "black";
+        });
+    }, 100);
+
+    profileName.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
+    profileDetails.forEach(item => {
+        item.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
+    });
+}
+
+profilecontainer.addEventListener('mouseenter', ProfileHighlight);
+profilecontainer.addEventListener('mouseleave', ProfileUnhighlight);
+
+
+window.addEventListener('load', ProfileUnhighlight);
