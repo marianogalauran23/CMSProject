@@ -34,15 +34,7 @@ $result = $stmt->get_result();
 </head>
 
 <body>
-    <nav>
-        <img src="../assets/logo_light.png" alt="Logo" draggable="false" style="width: 170px; height: 150px;">
-        <ul>
-            <li><a href="index.html">Home</a></li>
-            <li><a href="about.html">About</a></li>
-            <li><a href="services.html">Documentation</a></li>
-            <li><a href="contact.html">Contact</a></li>
-        </ul>
-    </nav>
+    <?php include "../components/navbar.php" ?>
 
     <div class="content">
         <h1 id="welcome">Welcome Back! <?php echo htmlspecialchars($username); ?></h1>
@@ -59,23 +51,38 @@ $result = $stmt->get_result();
                 </div>
             <?php endwhile; ?>
 
-            <!-- New Webpage Button (opens modal) -->
             <div class="add_card" onclick="openAddProjectModal()">
                 <img src="../assets/add_light.png" alt="add" class="add_icon"
-                    style="width: 45%; height: auto; max-width: 100vw;">
+                    style="width: 65%; height: auto; max-width: 100vw;">
                 <h1>New Webpage</h1>
             </div>
         </div>
     </div>
     <div class="profile">
         <div class="profile-image">
-            <img src="../assets/default_profile.png" alt="Profile" class="profile_icon">
+            <?php
+            $stmt = $conn->prepare("SELECT profile_image FROM users WHERE id = ?");
+            $stmt->bind_param("i", $user_id);
+            $stmt->execute();
+            $result = $stmt->get_result();
+
+            $profileImage = "../assets/default_profile.png";
+
+            if ($result->num_rows > 0) {
+                $user = $result->fetch_assoc();
+                if (!empty($user['profile_image'])) {
+                    $profileImage = htmlspecialchars($user['profile_image']);
+                }
+            }
+            ?>
+            <img src="<?php echo $profileImage; ?>" alt="Profile" class="profile_icon">
         </div>
+
         <div class="overlay"></div>
         <div class="profile-text">
             <h2><?php echo htmlspecialchars($username); ?></h2>
             <h3><?php
-            $stmt = $conn->prepare("SELECT first_name, last_name FROM users WHERE id = ?");
+            $stmt = $conn->prepare(query: "SELECT first_name, last_name FROM users WHERE id = ?");
             $stmt->bind_param("i", $user_id);
             $stmt->execute();
 
@@ -99,7 +106,7 @@ $result = $stmt->get_result();
                 echo " ";
             }
             ?></h3>
-            <p><a href="../components/logout.php" style="color: red">Logout</a></p>
+            <p><a class="Logout" style="color: red">Logout</a></p>
         </div>
     </div>
     <div id="cardMenu" class="context_menu">
@@ -108,7 +115,6 @@ $result = $stmt->get_result();
         <button onclick="deletePage()">Delete</button>
     </div>
 
-    <!-- MODAL -->
     <div id="addProjectModal" class="modal-overlay">
         <div class="modal-card">
             <h2>Add a New Project</h2>

@@ -4,7 +4,8 @@
     nav {
         background-color: #0e0d0d;
         color: white;
-        height: 6vh;
+        height: 9vh;
+        width: 100%;
         margin: 0;
         padding: 10px;
         display: flex;
@@ -16,6 +17,8 @@
         font-optical-sizing: auto;
         font-weight: 400;
         font-style: normal;
+        position: fixed;
+        z-index: 300;
     }
 
     nav img {

@@ -3,13 +3,24 @@ const profileImage = document.querySelector('.profile-image');
 const profileName = document.querySelector('.profile-text h2'); 
 const profiletext = document.querySelector('.profile-text');
 const profileDetails = document.querySelectorAll('.profile-text h3');
+const Logout = document.querySelector('.Logout');
 
-// Back button behavior
-window.addEventListener('popstate', function () {
-    window.location.href = 'index.php';
+profilecontainer.addEventListener('click', () => {
+    window.location.href = "profile.php";
 });
 
-// Context menu handling
+window.addEventListener('popstate', function () {
+    fetch("components/destroy_session.php", {
+    method: "POST"
+    })
+    .then(response => response.text())
+    .then(data => {
+    console.log(data);
+    window.location.href = "../index.php";
+    });
+
+});
+
 let selectedCard = null;
 
 function showCardMenu(event, card) {
@@ -96,7 +107,7 @@ document.addEventListener('DOMContentLoaded', () => {
         })
         .then(response => {
             if (response.redirected) {
-                window.location.href = response.url; // Reload dashboard
+                window.location.href = response.url;
             } else {
                 return response.text();
             }
@@ -112,9 +123,9 @@ function ProfileHighlight() {
     profilecontainer.style.transform = "scale(1.08)";
     profilecontainer.style.transition = "transform 0.2s ease-in-out";
     profilecontainer.querySelector('.overlay').style.opacity = "1"; 
-    profilecontainer.querySelector('.overlay').style.transition = "opacity 0.3s ease-in-out";
+    profilecontainer.querySelector('.overlay').style.transition = "opacity 1s ease-in-out";
 
-    profileName.style.transform = "translateY(-6px)";
+    profileName.style.transform = "translateY(-8px)";
     profileName.style.color = "white";
 
 
@@ -129,7 +140,7 @@ function ProfileHighlight() {
         });
     }, 100);
 
-    profileName.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
+    profileName.style.transition = "transform 0.8s ease-in-out, color 0.3s ease-in-out";
     profileDetails.forEach(item => {
         item.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
     });
@@ -139,19 +150,19 @@ function ProfileUnhighlight() {
     profilecontainer.style.transform = "scale(1)";
     profilecontainer.style.transition = "transform 0.3s ease-in-out";
     profilecontainer.querySelector('.overlay').style.opacity = "0";
-    profilecontainer.querySelector('.overlay').style.transition = "opacity 0.3s ease-in-out";
+    profilecontainer.querySelector('.overlay').style.transition = "opacity 1s ease-in-out";
 
     profileName.style.transform = "translateY(0px)";
-    profileName.style.color = "black";
+    profileName.style.color = "white";
 
-    profiletext.style.backgroundColor = "rgba(255, 255, 255, 0.51)";
-     profiletext.style.backdropFilter = "blur(5px)";
+    profiletext.style.backgroundColor = "#0a192f80";
+    profiletext.style.backdropFilter = "blur(5px)";
     profiletext.style.transition = "background-color 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out";
 
     setTimeout(() => {
         profileDetails.forEach(item => {
             item.style.transform = "translateY(0px)";
-            item.style.color = "black";
+            item.style.color = "white";
         });
     }, 100);
 
@@ -160,6 +171,18 @@ function ProfileUnhighlight() {
         item.style.transition = "transform 0.3s ease-in-out, color 0.3s ease-in-out";
     });
 }
+
+Logout.addEventListener('click', function (event) {
+    event.preventDefault();
+    fetch("components/destroy_session.php", {
+        method: "POST"
+    })
+    .then(response => response.text())
+    .then(data => {
+        console.log(data);
+        window.location.href = "../index.php";
+    });
+});
 
 profilecontainer.addEventListener('mouseenter', ProfileHighlight);
 profilecontainer.addEventListener('mouseleave', ProfileUnhighlight);

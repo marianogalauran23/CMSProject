@@ -6,12 +6,12 @@
 
 body{
     margin: 0;
-    background-color: #f0e1e1;
+    background-color: #0A192F;
     font-family: "Open Sans", sans-serif;
     font-optical-sizing: auto;
     font-weight: 400;
     font-style: normal;
-    color: black;
+    color: rgb(255, 255, 255);
 }
 
 nav {
@@ -56,7 +56,8 @@ nav ul li a:hover {
 }
 
 .content{
-    padding: 8vh
+    padding: 8vh;
+    padding-top: 17vh;
 }
 
 .card_container{
@@ -68,7 +69,7 @@ nav ul li a:hover {
 }
 
 .add_card{
-    background-color: #fff1ef;
+    background-color: #0B132B;
     text-align: center;
     font-size: 0.6rem;
     padding: 4vh;
@@ -80,9 +81,10 @@ nav ul li a:hover {
     justify-content: center;
     align-items: center;
     border-radius: 20px;
+    color: #AAAAAA;
     gap: 10px;
     box-shadow: 0px 0px 10px rgba(0, 0, 0, 0.1);
-    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, scale 0.3s ease-in-out;
+    transition: background-color 0.3s ease-in-out, box-shadow 0.3s ease-in-out, transform 0.3s ease-in-out;
 }
 
 .add_card img{
@@ -91,13 +93,16 @@ nav ul li a:hover {
 }
 
 .add_card:hover{
-    background-color: #d3bfbf;
+    background-color: #1C2541;
+    color: #FFFFFF;
+    border: 2px solid #3A506B;
+    transform: scale(1.03);
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
     cursor: pointer;
-    scale: 1.09;
 }
 
 .webpage_card {
-    background-color: #fff1ef;
+    background-color: #1C2541;  
     padding: 4vh;
     width: 25vh;
     min-height: 20vh;
@@ -113,18 +118,19 @@ nav ul li a:hover {
 .webpage_card h2 {
     font-size: 1.2rem;
     margin-bottom: 10px;
-    color: #3b1616;
+    color: #EEEEEE;  
 }
 
 .webpage_card p {
     font-size: 0.9rem;
     margin: 5px 0;
-    color: #4e2e2e;
+    color: #EEEEEE;  
 }
 
 .webpage_card:hover {
-    background-color: #d3bfbf;
-    scale: 1.03;
+    background-color: #23395B;
+    box-shadow: 0 4px 12px rgba(0, 0, 0, 0.4);
+    scale: 1.08;
     cursor: pointer;
 }
 
@@ -238,7 +244,7 @@ nav ul li a:hover {
 }
 
 .overlay {
-    background: linear-gradient(to top, rgb(0, 0, 0), rgba(255, 255, 255, 0) 90%);
+    background: linear-gradient(to top, rgba(216, 216, 216, 0.74), rgba(255, 255, 255, 0) 90%);
     position: absolute;
     bottom: 0;
     left: 0;
