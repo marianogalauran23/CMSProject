@@ -40,25 +40,7 @@ $BuildingPurp = [
 </head>
 
 <body>
-    <header id="header">
-        <div id="logo">
-            <h1>Webseret Builder</h1>
-        </div>
-        <button class="mobile-menu-toggle">
-            <i class="fas fa-bars"></i>
-        </button>
-        <nav id="menu">
-            <ul>
-                <li><a href="#" class="nav-link">Home</a></li>
-                <li><a href="#" class="nav-link">Settings</a></li>
-                <li>
-                    <div class="user-avatar">
-                        <img src="../css/images/profile.jpg?height=40&width=40" alt="User Avatar">
-                    </div>
-                </li>
-            </ul>
-        </nav>
-    </header>
+    <?php include '../components/navbar.php'?>
 
     <div class="content-container">
         <!-- Sidebar Menu -->
@@ -263,7 +245,7 @@ $BuildingPurp = [
                     <!-- Form Actions -->
                     <div class="form-actions">
                         <button type="button" class="btn btn-secondary">Cancel</button>
-                        <button type="submit" class="btn btn-primary">Create Profile</button>
+                        <button type="submit" class="btn btn-primary">Update</button>
                     </div>
                 </form>
             </div>
