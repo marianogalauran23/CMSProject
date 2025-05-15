@@ -22,6 +22,13 @@ $stmt = $conn->prepare($sql);
 $stmt->bind_param("i", $user_id);
 $stmt->execute();
 $result = $stmt->get_result();
+
+if (isset($_GET['edit'])) {
+    $_SESSION['edit_page_id'] = (int) $_GET['edit'];
+    header("Location: editPage.php");
+    exit();
+}
+
 ?>
 
 <!DOCTYPE html>

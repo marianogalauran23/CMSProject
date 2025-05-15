@@ -9,16 +9,25 @@ profilecontainer.addEventListener('click', () => {
     window.location.href = "profile.php";
 });
 
+document.querySelectorAll('.webpage_card').forEach(card => {
+    card.addEventListener('click', (e) => {
+        // Prevent context menu from interfering with click
+        if (!e.defaultPrevented) {
+            const pageId = card.dataset.id;
+            window.location.href = `editPage.php?id=${pageId}`;
+        }
+    });
+});
+
 window.addEventListener('popstate', function () {
     fetch("components/destroy_session.php", {
-    method: "POST"
+        method: "POST"
     })
     .then(response => response.text())
     .then(data => {
-    console.log(data);
-    window.location.href = "../index.php";
+        console.log(data);
+        window.location.href = "../index.php";
     });
-
 });
 
 let selectedCard = null;
@@ -42,12 +51,16 @@ document.addEventListener('click', function () {
 });
 
 function openPage() {
-    alert("Open page: " + selectedCard.querySelector('h2').textContent);
+    const id = selectedCard.getAttribute('data-id');
+    if (!id) return;
+    window.location.href = `viewPage.php?id=${id}`;
     hideCardMenu();
 }
 
 function editPage() {
-    alert("Edit page: " + selectedCard.querySelector('h2').textContent);
+    const id = selectedCard.getAttribute('data-id');
+    if (!id) return;
+    window.location.href = `dashboard.php?edit=${id}`;
     hideCardMenu();
 }
 
@@ -128,7 +141,6 @@ function ProfileHighlight() {
     profileName.style.transform = "translateY(-8px)";
     profileName.style.color = "white";
 
-
     profiletext.style.backgroundColor = "rgba(88, 81, 81, 0.25)";
     profiletext.style.backdropFilter = "blur(10px)";
     profiletext.style.transition = "background-color 0.3s ease-in-out, backdrop-filter 0.3s ease-in-out";
@@ -186,6 +198,5 @@ Logout.addEventListener('click', function (event) {
 
 profilecontainer.addEventListener('mouseenter', ProfileHighlight);
 profilecontainer.addEventListener('mouseleave', ProfileUnhighlight);
-
 
 window.addEventListener('load', ProfileUnhighlight);

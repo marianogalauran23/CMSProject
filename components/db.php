@@ -78,4 +78,3 @@ function registerUser($first_name, $last_name, $email, $username, $password, $co
         return "Error registering user: " . mysqli_error($GLOBALS['conn']);
     }
 }
-?>
