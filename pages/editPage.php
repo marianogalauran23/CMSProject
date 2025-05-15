@@ -58,7 +58,7 @@ $layout_data = $page['layout'] ? json_decode($page['layout'], true) : [];
     </div>
 
     <script src="https://cdn.jsdelivr.net/npm/@interactjs/interactjs/dist/interact.min.js"></script>
-    <script src="../js/editor.js"></script>
+    <script src="../javascript/editor.js"></script>
     <script>
         const initialLayout = <?php echo json_encode($layout_data); ?>;
         const currentPageId = <?php echo $page_id; ?>;
