@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 12, 2025 at 10:49 AM
+-- Generation Time: May 16, 2025 at 12:36 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -135,8 +135,16 @@ CREATE TABLE `pages` (
   `layout` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`layout`)),
   `author_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `thumbnail` varchar(255) DEFAULT '../assets/page_default.png'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+--
+-- Dumping data for table `pages`
+--
+
+INSERT INTO `pages` (`id`, `title`, `slug`, `content`, `status`, `layout`, `author_id`, `created_at`, `updated_at`, `thumbnail`) VALUES
+(10, 'NYORPOP', 'nyorpop', NULL, 'draft', NULL, 2, '2025-05-13 14:18:03', '2025-05-13 14:18:03', '../assets/page_default.png');
 
 -- --------------------------------------------------------
 
@@ -222,23 +230,30 @@ CREATE TABLE `users` (
   `first_name` varchar(50) DEFAULT NULL,
   `last_name` varchar(50) DEFAULT NULL,
   `bio` text DEFAULT NULL,
-  `profile_image` varchar(255) DEFAULT 'default-profile.jpg',
-  `cover_image` varchar(255) DEFAULT 'default-cover.jpg',
+  `profile_image` varchar(255) DEFAULT '../assets/default_profile.png',
+  `cover_image` varchar(255) DEFAULT '../assets/placeholder_cover.jpg',
   `role` enum('admin','editor','author','subscriber') DEFAULT 'subscriber',
   `status` enum('active','inactive','banned') DEFAULT 'active',
   `last_login` datetime DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
-  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp()
+  `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
+  `gender` varchar(120) NOT NULL DEFAULT 'unspecified',
+  `educational_background` varchar(120) NOT NULL DEFAULT 'unspecified',
+  `profession` varchar(120) NOT NULL DEFAULT 'unspecified',
+  `location` varchar(120) NOT NULL DEFAULT 'unspecified',
+  `marital_status` varchar(120) NOT NULL DEFAULT 'unspecified'
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 --
 -- Dumping data for table `users`
 --
 
-INSERT INTO `users` (`id`, `username`, `email`, `password`, `first_name`, `last_name`, `bio`, `profile_image`, `cover_image`, `role`, `status`, `last_login`, `created_at`, `updated_at`) VALUES
-(1, 'admin', 'admin@example.com', '$2y$10$8zUl.e9WQYKGg7DFrDHnxeRwBkXQPQrKVwJwh1QnOxgbRXLSqjnVK', 'Admin', 'User', 'System administrator', 'default-profile.jpg', 'default-cover.jpg', 'admin', 'active', NULL, '2025-05-06 16:47:08', '2025-05-06 16:47:08'),
-(2, 'khiqyam', 'marianogalauran23@gmail.com', '$2y$10$opo1ipj6LEfbtmPUMCpjCe063lgRIGApJDUlvkPQA/x2GcwI.S7Na', 'Mariano', 'Galauran', NULL, 'default-profile.jpg', 'default-cover.jpg', 'subscriber', 'active', NULL, '2025-05-11 15:43:31', '2025-05-11 16:22:32'),
-(3, 'kenzo', 'kenzocutie@gmail.com', '$2y$10$gcRCf9bSlT1Ol9iMhEFSBublUMAYweQSrX1Lf4Slpcj0eFlSC1Xo6', 'Kenzo', 'Shirogane', NULL, 'default-profile.jpg', 'default-cover.jpg', 'subscriber', 'active', NULL, '2025-05-11 16:14:14', '2025-05-11 16:23:42');
+INSERT INTO `users` (`id`, `username`, `email`, `password`, `first_name`, `last_name`, `bio`, `profile_image`, `cover_image`, `role`, `status`, `last_login`, `created_at`, `updated_at`, `gender`, `educational_background`, `profession`, `location`, `marital_status`) VALUES
+(1, 'admin', 'admin@example.com', '$2y$10$8zUl.e9WQYKGg7DFrDHnxeRwBkXQPQrKVwJwh1QnOxgbRXLSqjnVK', 'Admin', 'User', 'System administrator', '../assets/default_profile.png', 'default-cover.jpg', 'admin', 'active', NULL, '2025-05-06 16:47:08', '2025-05-13 08:47:48', 'unspecified', 'unspecified', 'unspecified', 'unspecified', 'unspecified'),
+(2, 'khiqyam', 'marianogalauran23@gmail.com', '$2y$10$opo1ipj6LEfbtmPUMCpjCe063lgRIGApJDUlvkPQA/x2GcwI.S7Na', 'Kenzo', 'Galauran', 'Student', 'uploads/2/GqtVdloX0AE5S2Q.jpg', 'uploads/2/sunsetz.png', 'subscriber', 'active', NULL, '2025-05-11 15:43:31', '2025-05-16 10:31:27', 'Male', 'Personal Project', 'Student', 'Taguig City, Metro Manila', 'Single'),
+(3, 'kenzo', 'kenzocutie@gmail.com', '$2y$10$gcRCf9bSlT1Ol9iMhEFSBublUMAYweQSrX1Lf4Slpcj0eFlSC1Xo6', 'Kenzo', 'Shirogane', NULL, '../assets/default_profile.png', 'default-cover.jpg', 'subscriber', 'active', NULL, '2025-05-11 16:14:14', '2025-05-13 08:48:11', 'unspecified', 'unspecified', 'unspecified', 'unspecified', 'unspecified'),
+(4, 'yuutajustforyou@gmal.com', '', '', NULL, NULL, NULL, '../assets/default_profile.png', '../assets/placeholder_cover.jpg', 'subscriber', 'active', NULL, '2025-05-16 09:25:33', '2025-05-16 09:25:33', 'Male', 'unspecified', 'unspecified', 'unspecified', 'unspecified'),
+(5, '', 'yuutajustforyou@gmail.com', '', NULL, NULL, NULL, '../assets/default_profile.png', '../assets/placeholder_cover.jpg', 'subscriber', 'active', NULL, '2025-05-16 09:27:09', '2025-05-16 09:27:09', 'Male', 'unspecified', 'unspecified', 'unspecified', 'unspecified');
 
 --
 -- Indexes for dumped tables
@@ -378,7 +393,7 @@ ALTER TABLE `notifications`
 -- AUTO_INCREMENT for table `pages`
 --
 ALTER TABLE `pages`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=11;
 
 --
 -- AUTO_INCREMENT for table `page_components`
@@ -408,7 +423,7 @@ ALTER TABLE `settings`
 -- AUTO_INCREMENT for table `users`
 --
 ALTER TABLE `users`
-  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=4;
+  MODIFY `id` int(11) NOT NULL AUTO_INCREMENT, AUTO_INCREMENT=10;
 
 --
 -- Constraints for dumped tables

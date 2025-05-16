@@ -130,7 +130,7 @@ $user = $result->fetch_assoc();
 
                 <!-- Static User Posts for Now -->
                 <section id="user-posts">
-                    <h3 class="section-title">Recent Posts</h3>
+                    <h3 class="section-title">Recent Projects</h3>
                     <div class="post-grid">
                         <!-- Post cards here (left as-is) -->
                     </div>
