@@ -600,3 +600,39 @@ body {
     justify-content: center;
   }
 }
+
+#profession,
+#educational_background {
+    width: 320px;
+    padding: 10px;
+    font-size: 14px;
+    border: 2px solid #ccc;
+    border-radius: 6px;
+    margin-top: 8px;
+    margin-bottom: 15px;
+    background-color: #f9f9f9;
+    transition: border-color 0.3s, background-color 0.3s;
+}
+
+#profession:focus,
+#educational_background:focus {
+    border-color: #007BFF;
+    background-color: #fff;
+    outline: none;
+}
+
+.educational_background button {
+    padding: 10px 20px;
+    font-size: 15px;
+    background-color: #007BFF;
+    color: white;
+    border: none;
+    border-radius: 5px;
+    cursor: pointer;
+    margin-top: 15px;
+    transition: background-color 0.3s ease;
+}
+
+.educational_background button:hover {
+    background-color: #0056b3;
+}
