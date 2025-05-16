@@ -128,7 +128,6 @@ $user = $result->fetch_assoc();
                     </div>
                 </div>
 
-                <!-- Static User Posts for Now -->
                 <section id="user-posts">
                     <h3 class="section-title">Recent Projects</h3>
                     <div class="post-grid">
@@ -142,7 +141,7 @@ $user = $result->fetch_assoc();
 
     <footer id="footer">
         <div class="footer-content">
-            <p>&copy; 2023 Webseret Builder. All rights reserved.</p>
+            <p>&copy; 2025 BrightDesk. All rights reserved.</p>
             <div class="footer-links">
                 <a href="#">Privacy Policy</a>
                 <a href="#">Terms of Service</a>
@@ -159,6 +158,11 @@ $user = $result->fetch_assoc();
         document.querySelector('.mobile-menu-toggle')?.addEventListener('click', function () {
             document.getElementById('menu').classList.toggle('active');
         });
+
+        window.addEventListener('popstate', function (event) {
+            window.location.href = 'pages/dashboard.php';
+        });
+
     </script>
 </body>
 

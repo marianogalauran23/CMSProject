@@ -11,7 +11,6 @@ profilecontainer.addEventListener('click', () => {
 
 document.querySelectorAll('.webpage_card').forEach(card => {
     card.addEventListener('click', (e) => {
-        // Prevent context menu from interfering with click
         if (!e.defaultPrevented) {
             const pageId = card.dataset.id;
             window.location.href = `editPage.php?id=${pageId}`;
