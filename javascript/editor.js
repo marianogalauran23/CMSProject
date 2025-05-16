@@ -226,14 +226,15 @@ function createElement(type, x, y) {
                 // Client preview
                 const reader = new FileReader();
                reader.onload = (e) => {
-                    preview.style.background = `url('${e.target.result}') center/cover`; // Added quotes
+                    // In your image upload handler:
+                    preview.style.background = `url('${result.fullUrl}') center/cover`;
                     preview.style.backgroundColor = 'transparent';
                     preview.querySelector('span')?.remove();
                 };
                 reader.readAsDataURL(file);
 
                 // Server upload
-                try {
+                try {   
                     const response = await fetch(`upload.php?user_id=${USER_ID}&page_id=${PAGE_ID}`, {
                         method: 'POST',
                         body: formData
@@ -808,3 +809,20 @@ if (typeof PAGE_ID !== 'undefined' && PAGE_ID > 0) {
 } else {
     console.error('Invalid page ID:', PAGE_ID);
 }
+
+document.getElementById("publishPage").addEventListener("click", async () => {
+    try {
+        const response = await fetch(`/CMSproject/components/publish.php?page_id=${PAGE_ID}`, {
+            method: 'POST',
+            credentials: 'same-origin'
+        });
+        
+        const result = await response.json();
+        if(result.success) {
+            const publicUrl = `${window.location.origin}${result.url}`;
+            prompt("Public URL:", publicUrl);
+        }
+    } catch(error) {
+        console.error('Publish error:', error);
+    }
+});

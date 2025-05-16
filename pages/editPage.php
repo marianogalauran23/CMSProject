@@ -173,6 +173,34 @@ $components_data = $page['components_data'] ? json_decode($page['components_data
         #clearAllBtn:hover {
             background: #c82333;
         }
+
+        #savePage,
+        #publishPage {
+            padding: 10px 20px;
+            font-size: 14px;
+            border: none;
+            border-radius: 4px;
+            cursor: pointer;
+            margin: 5px;
+        }
+
+        #savePage {
+            background-color: #007bff;
+            color: white;
+        }
+
+        #savePage:hover {
+            background-color: #0056b3;
+        }
+
+        #publishPage {
+            background-color: #28a745;
+            color: white;
+        }
+
+        #publishPage:hover {
+            background-color: #218838;
+        }
     </style>
 </head>
 
@@ -228,6 +256,7 @@ $components_data = $page['components_data'] ? json_decode($page['components_data
         </div>
         <button id="clearAllBtn">Clear All Elements</button>
         <button id="savePage" class="btn btn-primary">Save</button>
+        <button id="publishPage" class="btn btn-success">Publish</button>
     </div>
 
     <script>
