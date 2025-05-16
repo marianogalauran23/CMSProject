@@ -68,8 +68,13 @@ function showProperties(el) {
         <br>
         <label>Height:</label>
         <input type="number" id="propHeight" value="${el.offsetHeight}">
+        <br>
+        <label>Text Color:</label>
+        <input type="color" id="propTextColor" value="${el.style.color}">
     `;
-
+    document.getElementById("propTextColor").addEventListener("input", e => {
+        el.style.color = e.target.value;
+    });
     document.getElementById("propText").addEventListener("input", e => {
         el.innerText = e.target.value;
     });

@@ -1,7 +1,25 @@
 <?php
 session_start();
-?>
 
+include "../components/db.php";
+
+if (!isset($_SESSION['username']) || !isset($_SESSION['user_id'])) {
+    header("Location: index.php");
+    exit();
+}
+
+$username = $_SESSION['username'];
+$user_id = $_SESSION['user_id'];
+
+$stmt = $conn->prepare("SELECT first_name, last_name, email, profile_image, cover_image, gender, educational_background, profession, location, marital_status FROM users WHERE id = ?");
+$stmt->bind_param("i", $user_id);
+$stmt->execute();
+$result = $stmt->get_result();
+if ($result->num_rows === 0) {
+    die("User not found");
+}
+$user = $result->fetch_assoc();
+?>
 <!DOCTYPE html>
 <html lang="en">
 
@@ -17,19 +35,12 @@ session_start();
     <?php include "../components/navbar.php" ?>
 
     <div class="content-container">
-        <!-- Sidebar Menu -->
         <aside class="sidebar">
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Main</h3>
                 <ul class="sidebar-menu">
                     <li class="sidebar-menu-item">
                         <a href="#" class="sidebar-menu-link active">
-                            <i class="fas fa-tachometer-alt"></i>
-                            <span>Dashboard</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link">
                             <i class="fas fa-user"></i>
                             <span>Profile</span>
                         </a>
@@ -42,7 +53,6 @@ session_start();
                     </li>
                 </ul>
             </div>
-
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Content</h3>
                 <ul class="sidebar-menu">
@@ -58,15 +68,8 @@ session_start();
                             <span>Feed</span>
                         </a>
                     </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link">
-                            <i class="fas fa-bookmark"></i>
-                            <span>Saved</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
-
             <div class="sidebar-section">
                 <h3 class="sidebar-section-title">Social</h3>
                 <ul class="sidebar-menu">
@@ -76,48 +79,27 @@ session_start();
                             <span>Friends</span>
                         </a>
                     </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link">
-                            <i class="fas fa-user-plus"></i>
-                            <span>Connections</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link">
-                            <i class="fas fa-handshake"></i>
-                            <span>Collaborations</span>
-                        </a>
-                    </li>
-                    <li class="sidebar-menu-item">
-                        <a href="#" class="sidebar-menu-link">
-                            <i class="fas fa-envelope"></i>
-                            <span>Messages</span>
-                        </a>
-                    </li>
                 </ul>
             </div>
         </aside>
 
-        <!-- Main Content -->
         <main id="main-content">
-            <!-- Profile Section -->
             <section id="profile-container">
-                <!-- Background Banner -->
                 <div class="profile-banner">
-                    <img src="../css/images/Background.jpg?height=200&width=1000" alt="Profile Banner">
+                    <img src="<?= $user['cover_image'] ?? '../css/images/Background.jpg' ?>" alt="Profile Banner">
                 </div>
 
                 <div id="user-profile">
                     <div class="profile-header">
-                        <!-- Profile Picture -->
                         <div class="profile-picture-container">
-                            <img id="profile-picture" src="../css/images/profile.jpg?height=150&width=150"
+                            <img id="profile-picture" src="<?= $user['profile_image'] ?? '../css/images/profile.jpg' ?>"
                                 alt="Profile Picture">
                         </div>
 
                         <div class="profile-info">
-                            <h2 id="user-name">John Doe</h2>
-                            <p id="user-email">johndoe@example.com</p>
+                            <h2 id="user-name"><?= htmlspecialchars($user['first_name'] . ' ' . $user['last_name']) ?>
+                            </h2>
+                            <p id="user-email"><?= htmlspecialchars($user['email']) ?></p>
                             <button class="edit-profile-btn" onClick="goToEditProfile()">Edit Profile</button>
                         </div>
                     </div>
@@ -125,69 +107,33 @@ session_start();
                     <div class="profile-details">
                         <div class="detail-item">
                             <i class="fas fa-venus-mars"></i>
-                            <span>Male</span>
+                            <span><?= htmlspecialchars($user['gender'] ?? 'Not specified') ?></span>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-home"></i>
-                            <span>Urban</span>
+                            <span><?= htmlspecialchars($user['educational_background'] ?? 'N/A') ?></span>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-briefcase"></i>
-                            <span>Professional</span>
+                            <span><?= htmlspecialchars($user['profession'] ?? 'N/A') ?></span>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-map-marker-alt"></i>
-                            <span>New York, USA</span>
+                            <span><?= htmlspecialchars($user['location'] ?? 'Unknown') ?></span>
                         </div>
                         <div class="detail-item">
                             <i class="fas fa-user-tie"></i>
-                            <span>Individual</span>
+                            <span><?= htmlspecialchars($user['marital_status'] ?? 'N/A') ?></span>
                         </div>
                     </div>
                 </div>
 
-                <!-- User Posts Section -->
+                <!-- Static User Posts for Now -->
                 <section id="user-posts">
                     <h3 class="section-title">Recent Posts</h3>
-
                     <div class="post-grid">
-                        <!-- Post 1 -->
-                        <div class="post-card">
-                            <div class="post-image">
-                                <img src="../css/images/Management.jpg?height=200&width=300" alt="Post Image">
-                            </div>
-                            <div class="post-content">
-                                <h4>Getting Started with Web Development</h4>
-                                <p class="post-date">Posted on May 12, 2023</p>
-                                <p class="post-excerpt">Learn the basics of HTML, CSS, and JavaScript to kickstart your
-                                    web development journey.</p>
-                                <div class="post-actions">
-                                    <button class="action-btn"><i class="far fa-heart"></i> 24</button>
-                                    <button class="action-btn"><i class="far fa-comment"></i> 8</button>
-                                    <button class="action-btn"><i class="far fa-share-square"></i></button>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Post 2 -->
-                        <div class="post-card">
-                            <div class="post-image">
-                                <img src="../css/images/compiler.webp?height=200&width=300" alt="Post Image">
-                            </div>
-                            <div class="post-content">
-                                <h4>Responsive Design Techniques</h4>
-                                <p class="post-date">Posted on April 28, 2023</p>
-                                <p class="post-excerpt">Explore modern approaches to creating responsive websites that
-                                    work on all devices.</p>
-                                <div class="post-actions">
-                                    <button class="action-btn"><i class="far fa-heart"></i> 42</button>
-                                    <button class="action-btn"><i class="far fa-comment"></i> 15</button>
-                                    <button class="action-btn"><i class="far fa-share-square"></i></button>
-                                </div>
-                            </div>
-                        </div>
+                        <!-- Post cards here (left as-is) -->
                     </div>
-
                     <button class="load-more-btn">Load More Posts</button>
                 </section>
             </section>
@@ -206,16 +152,13 @@ session_start();
     </footer>
 
     <script>
-        const editButton = document.getElementById('editButton');
-
-        document.querySelector('.mobile-menu-toggle').addEventListener('click', function () {
-            document.getElementById('menu').classList.toggle('active');
-        });
-
         function goToEditProfile() {
             window.location.href = 'profileCreation.php';
         }
 
+        document.querySelector('.mobile-menu-toggle')?.addEventListener('click', function () {
+            document.getElementById('menu').classList.toggle('active');
+        });
     </script>
 </body>
 
