@@ -96,7 +96,7 @@ function createElement(type, x, y) {
 
         case "image":
             el.innerHTML = `
-                <div style="width:100%;height:100%;background:#f0f0f0;
+                <div style="width:100%;height:100%;background:transparent;
                             display:flex;align-items:center;justify-content:center">
                     <span>Upload Image</span>
                     <input type="file" accept="image/*" hidden>
@@ -217,32 +217,32 @@ function createElement(type, x, y) {
         const fileInput = el.querySelector('input[type="file"]');
         const preview = el.querySelector('div');
         
-        // In the image element creation code (line 315-334)
         fileInput.addEventListener('change', async (e) => {
             const file = e.target.files[0];
             if(file) {
-                // Immediate client-side preview
+                const formData = new FormData();
+                formData.append('image', file);
+
+                // Client preview
                 const reader = new FileReader();
-                reader.onload = (e) => {
-                    preview.style.background = `url(${e.target.result}) center/cover`;
-                    preview.querySelector('span').remove();
+               reader.onload = (e) => {
+                    preview.style.background = `url('${e.target.result}') center/cover`; // Added quotes
+                    preview.style.backgroundColor = 'transparent';
+                    preview.querySelector('span')?.remove();
                 };
                 reader.readAsDataURL(file);
 
                 // Server upload
-                const formData = new FormData();
-                formData.append('image', file);
-                
                 try {
-                    const response = await fetch(`upload.php?user_id=<?= $user_id ?>&page_id=<?= $page_id ?>`, {
+                    const response = await fetch(`upload.php?user_id=${USER_ID}&page_id=${PAGE_ID}`, {
                         method: 'POST',
                         body: formData
                     });
                     
                     const result = await response.json();
                     if(result.success) {
-                        // Update to match server storage path
-                        preview.style.background = `url(../pages/uploads/${result.user_id}/assets/${result.filename}) center/cover`;
+                        preview.dataset.serverSrc = result.fullUrl;
+                        preview.style.background = `url('${result.fullUrl}') center/cover`; // Added quotes
                     }
                 } catch(error) {
                     console.error('Upload failed:', error);
@@ -252,6 +252,7 @@ function createElement(type, x, y) {
 
         preview.addEventListener('contextmenu', (e) => {
             e.preventDefault();
+            e.stopPropagation();
             fileInput.click();
         });
     }
@@ -386,6 +387,88 @@ function makeResizable(el, resizer) {
     });
 }
 
+// Add this style section for the properties panel
+const propertyStyle = document.createElement('style');
+propertyStyle.textContent = `
+.property-section {
+    padding: 15px;
+    background: #f8f9fa;
+    border-left: 1px solid #dee2e6;
+}
+
+.property-group {
+    margin-bottom: 20px;
+    padding: 15px;
+    background: white;
+    border: 1px solid #dee2e6;
+    border-radius: 4px;
+}
+
+.property-group h3 {
+    margin-top: 0;
+    color: #333;
+    font-size: 1.2rem;
+}
+
+.property-group h4 {
+    margin: 0 0 10px 0;
+    color: #666;
+    font-size: 0.9rem;
+    text-transform: uppercase;
+}
+
+.property-group label {
+    display: flex;
+    align-items: center;
+    margin: 8px 0;
+    font-size: 0.9rem;
+    color: #444;
+}
+
+.property-group input[type="color"] {
+    width: 30px;
+    height: 30px;
+    padding: 2px;
+    margin-left: auto;
+}
+
+.property-group input[type="number"],
+.property-group input[type="text"] {
+    width: 80px;
+    padding: 6px;
+    margin-left: auto;
+    border: 1px solid #ddd;
+    border-radius: 3px;
+}
+
+.property-group select {
+    margin-left: auto;
+    padding: 4px;
+}
+
+.property-group button {
+    background: #007bff;
+    color: white;
+    border: none;
+    padding: 6px 12px;
+    border-radius: 3px;
+    cursor: pointer;
+    margin: 4px 2px;
+}
+
+.property-group button:hover {
+    background: #0056b3;
+}
+
+.option-item {
+    display: flex;
+    gap: 8px;
+    margin: 4px 0;
+}
+`;
+document.head.appendChild(propertyStyle);
+
+// Modified showProperties function
 function showProperties(el) {
     const type = el.dataset.type;
     let html = `
@@ -402,72 +485,31 @@ function showProperties(el) {
                 <h4>Size</h4>
                 <label>Width: <input type="number" value="${el.offsetWidth}" id="propWidth"></label>
                 <label>Height: <input type="number" value="${el.offsetHeight}" id="propHeight"></label>
-            </div>
+            </div>`;
 
+    // Only show appearance properties for non-image elements
+    if(type !== 'image') {
+        html += `
             <div class="property-group">
                 <h4>Appearance</h4>
-                <label>Background: <input type="color" value="${getComputedStyle(el).backgroundColor}" id="propBgColor"></label><br>
-                <label>Text Color: <input type="color" value="${type === 'button' ? getComputedStyle(el.querySelector('button')).color : getComputedStyle(el).color}" id="propTextColor"></label><br>
-                <label>Font Size: <input type="number" value="${parseInt(getComputedStyle(el).fontSize) || 16}" id="propFontSize"></label><br>
+                <label>Background: <input type="color" value="${getComputedStyle(el).backgroundColor}" id="propBgColor"></label>
+                <label>Text Color: <input type="color" value="${type === 'button' ? getComputedStyle(el.querySelector('button')).color : getComputedStyle(el).color}" id="propTextColor"></label>
+                <label>Font Size: <input type="number" value="${parseInt(getComputedStyle(el).fontSize) || 16}" id="propFontSize"></label>
                 <label>Font Family: 
                     <select id="propFontFamily">
-                        ${['Arial', 'Helvetica', 'Times New Roman', 'Verdana'].map(font => `
+                        ${['Arial', 'Times New Roman', 'Verdana'].map(font => `
                             <option value="${font}" ${getComputedStyle(el).fontFamily.includes(font) ? 'selected' : ''}>${font}</option>
                         `).join('')}
                     </select>
                 </label>
-                <br>
                 <label>Font Style: 
                     <select id="propFontStyle">
                         <option value="normal" ${getComputedStyle(el).fontStyle === 'normal' ? 'selected' : ''}>Normal</option>
                         <option value="italic" ${getComputedStyle(el).fontStyle === 'italic' ? 'selected' : ''}>Italic</option>
                     </select>
                 </label>
-                <br>
                 <label>Border Radius: <input type="number" value="${parseInt(el.style.borderRadius) || 0}" id="propRadius"></label>
-            </div>
-    `;
-
-    if(['radio', 'checkbox', 'dropdown'].includes(type)) {
-        html += `
-            <div class="property-group">
-                <h4>Options Management</h4>
-                ${type === 'dropdown' ? `
-                    <div id="dropdown-options-list">
-                        ${Array.from(el.querySelectorAll('option')).map((option, index) => `
-                            <div class="option-item">
-                                <input type="text" value="${option.textContent}" 
-                                    data-index="${index}" style="margin:4px 0">
-                            </div>
-                        `).join('')}
-                    </div>
-                ` : ''}
-                <button onclick="addOption('${type}')">Add Option</button>
-                <button onclick="removeLastOption('${type}')">Remove Last Option</button>
-            </div>
-        `;
-    }
-
-    if(type === 'header') {
-        html += `
-            <div class="property-group">
-                <h4>Header Content</h4>
-                <label>Website Name: <input type="text" value="${el.querySelector('nav > div:first-child').innerText}" id="propLogo"></label>
-                <label>Menu Items: <input type="text" value="${[...el.querySelectorAll('nav > div:last-child > div')].map(d => d.innerText).join(', ')}" id="propMenu"></label>
-                <label>Background Color: <input type="color" value="${getComputedStyle(el.querySelector('nav')).backgroundColor}" id="propNavBg"></label>
-            </div>
-        `;
-    }
-
-    if(type === 'button') {
-    html += `
-        <div class="property-group">
-            <h4>Button Settings</h4>
-            <label>Button Text: <input type="text" value="${el.querySelector('button').innerText}" id="propBtnText"></label>
-            <label>Background Color: <input type="color" value="#ffffff" id="propBtnBg"></label>
-            <label>Text Color: <input type="color" value="${getComputedStyle(el.querySelector('button')).color}" id="propBtnColor"></label>
-        </div>
-    `;
+            </div>`;
     }
 
     html += `</div>`;
@@ -601,3 +643,168 @@ document.getElementById("clearAllBtn").addEventListener("click", () => {
     elementsContainer.querySelectorAll(".element").forEach(el => el.remove());
     propertyPanel.innerHTML = "";
 });
+
+// Save functionality
+document.getElementById('savePage').addEventListener('click', async () => {
+    const elements = Array.from(elementsContainer.querySelectorAll('.element'));
+    const pageId = PAGE_ID;
+    
+    const components = elements.map((element) => {
+        const type = element.dataset.type;
+        const styles = {};
+        const content = {};
+        const computedStyle = getComputedStyle(element);
+
+        // Base properties
+        const baseComponent = {
+            type,
+            position_x: parseInt(element.style.left) || 0,
+            position_y: parseInt(element.style.top) || 0,
+            width: element.offsetWidth,
+            height: element.offsetHeight,
+            z_index: parseInt(element.style.zIndex) || 1,
+            styles: {},
+            content: {}
+        };
+
+        // Style and content handling
+        switch(type) {
+            case 'button':
+                const button = element.querySelector('button');
+                styles.backgroundColor = getComputedStyle(button).backgroundColor;
+                styles.color = getComputedStyle(button).color;
+                content.text = button?.innerText || '';
+                break;
+
+            case 'header':
+                const nav = element.querySelector('nav');
+                styles.backgroundColor = getComputedStyle(nav).backgroundColor;
+                content.logo = nav.querySelector('div:first-child')?.innerText || '';
+                content.menuItems = Array.from(nav.querySelectorAll('div:last-child > div'))
+                    .map(item => item.innerText);
+                break;
+
+            case 'image':
+                const imgDiv = element.querySelector('div');
+                content.src = imgDiv.dataset.serverSrc || 
+                            imgDiv.dataset.tempSrc || 
+                            imgDiv.style.backgroundImage
+                                .replace(/^url\(['"]?/, '')
+                                .replace(/['"]?\)$/, '');
+                
+                // Only save necessary background properties
+                styles.backgroundSize = imgDiv.style.backgroundSize || 'cover';
+                styles.backgroundPosition = imgDiv.style.backgroundPosition || 'center';
+                break;
+
+            case 'text':
+                const textDiv = element.querySelector('[contenteditable]');
+                content.html = textDiv?.innerHTML || '';
+                styles.color = getComputedStyle(textDiv).color;
+                styles.fontSize = getComputedStyle(textDiv).fontSize;
+                break;
+
+            case 'container':
+                styles.backgroundColor = computedStyle.backgroundColor;
+                styles.border = computedStyle.border;
+                styles.padding = computedStyle.padding;
+                break;
+
+            default:
+                styles.backgroundColor = computedStyle.backgroundColor;
+                break;
+        }
+
+        return { ...baseComponent, styles, content };
+    });
+
+    try {
+        const response = await fetch('../components/saveComponents.php', {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify({
+                user_id: USER_ID,
+                page_id: pageId,
+                components
+            })
+        });
+        
+        const result = await response.json();
+        alert(result.success ? 'Saved!' : `Error: ${result.error}`);
+    } catch(error) {
+        console.error('Save failed:', error);
+        alert('Save failed - check console');
+    }
+});
+
+// Load functionality
+async function loadPage(pageId) {
+    try {
+        const response = await fetch(`../components/load_page.php?page_id=${pageId}`);
+        if (!response.ok) throw new Error(`HTTP error ${response.status}`);
+        
+        const components = await response.json();
+        elementsContainer.querySelectorAll('.element').forEach(el => el.remove());
+
+        components.forEach(component => {
+            const el = createElement(component.type, component.position_x, component.position_y);
+            
+            // Apply dimensions and z-index
+            el.style.width = `${component.width}px`;
+            el.style.height = `${component.height}px`;
+            el.style.zIndex = component.z_index;
+
+            // Apply styles
+            Object.entries(component.styles).forEach(([prop, value]) => {
+                switch(component.type) {
+                    case 'button':
+                        el.querySelector('button').style[prop] = value;
+                        break;
+                    case 'header':
+                        el.querySelector('nav').style[prop] = value;
+                        break;
+                    case 'image':
+                        el.querySelector('div').style[prop] = value;
+                        break;
+                    default:
+                        el.style[prop] = value;
+                }
+            });
+
+            // Apply content
+            switch(component.type) {
+                case 'text':
+                    el.querySelector('[contenteditable]').innerHTML = component.content.html;
+                    break;
+                case 'header':
+                    const nav = el.querySelector('nav');
+                    nav.querySelector('div:first-child').innerText = component.content.logo;
+                    nav.querySelector('div:last-child').innerHTML = component.content.menuItems
+                        .map(item => `<div contenteditable>${item}</div>`)
+                        .join('');
+                    break;
+                case 'image':
+                    const imgDiv = el.querySelector('div');
+                    if (imgDiv && component.content.src) {
+                        imgDiv.style.backgroundImage = `url('${component.content.src}')`;
+                        imgDiv.querySelector('span')?.remove();
+                    }
+                    break;
+            }
+
+            elementsContainer.appendChild(el);
+        });
+    } catch(error) {
+        console.error('Load error:', error);
+        alert('Failed to load components');
+    }
+}
+
+// Initial load
+if (typeof PAGE_ID !== 'undefined' && PAGE_ID > 0) {
+    loadPage(PAGE_ID).catch(error => {
+        console.error('Initial load error:', error);
+    });
+} else {
+    console.error('Invalid page ID:', PAGE_ID);
+}

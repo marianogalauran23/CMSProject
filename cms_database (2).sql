@@ -3,7 +3,7 @@
 -- https://www.phpmyadmin.net/
 --
 -- Host: 127.0.0.1
--- Generation Time: May 16, 2025 at 12:36 PM
+-- Generation Time: May 16, 2025 at 08:47 PM
 -- Server version: 10.4.32-MariaDB
 -- PHP Version: 8.2.12
 
@@ -61,6 +61,37 @@ INSERT INTO `components` (`id`, `name`, `type`, `content`, `settings`, `created_
 (2, 'Paragraph', 'text', '<p>This is a sample paragraph component.</p>', '{\"align\": \"left\"}', '2025-05-06 16:47:08', '2025-05-06 16:47:08'),
 (3, 'Button', 'button', '<button>Click Me</button>', '{\"text\": \"Click Me\", \"url\": \"#\", \"style\": \"primary\"}', '2025-05-06 16:47:08', '2025-05-06 16:47:08'),
 (4, 'Image', 'image', '<img src=\"placeholder.jpg\" alt=\"Placeholder\">', '{\"src\": \"placeholder.jpg\", \"alt\": \"Placeholder\", \"width\": \"100%\"}', '2025-05-06 16:47:08', '2025-05-06 16:47:08');
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `component_content`
+--
+
+CREATE TABLE `component_content` (
+  `component_id` int(11) NOT NULL,
+  `text_content` longtext DEFAULT NULL,
+  `image_url` varchar(255) DEFAULT NULL,
+  `button_text` varchar(255) DEFAULT NULL,
+  `options` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`options`))
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
+
+-- --------------------------------------------------------
+
+--
+-- Table structure for table `component_styles`
+--
+
+CREATE TABLE `component_styles` (
+  `component_id` int(11) NOT NULL,
+  `background_color` varchar(20) DEFAULT NULL,
+  `text_color` varchar(20) DEFAULT NULL,
+  `font_size` varchar(20) DEFAULT NULL,
+  `border_radius` varchar(20) DEFAULT NULL,
+  `border` varchar(100) DEFAULT NULL,
+  `padding` varchar(50) DEFAULT NULL,
+  `margin` varchar(50) DEFAULT NULL
+) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
 
@@ -133,6 +164,7 @@ CREATE TABLE `pages` (
   `content` longtext DEFAULT NULL,
   `status` enum('published','draft','trash') DEFAULT 'draft',
   `layout` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`layout`)),
+  `components_data` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin GENERATED ALWAYS AS (json_array()) VIRTUAL,
   `author_id` int(11) DEFAULT NULL,
   `created_at` timestamp NOT NULL DEFAULT current_timestamp(),
   `updated_at` timestamp NOT NULL DEFAULT current_timestamp() ON UPDATE current_timestamp(),
@@ -155,9 +187,15 @@ INSERT INTO `pages` (`id`, `title`, `slug`, `content`, `status`, `layout`, `auth
 CREATE TABLE `page_components` (
   `id` int(11) NOT NULL,
   `page_id` int(11) NOT NULL,
-  `component_id` int(11) NOT NULL,
-  `position` int(11) NOT NULL,
-  `settings` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL CHECK (json_valid(`settings`))
+  `component_type` varchar(50) NOT NULL,
+  `position_x` int(11) NOT NULL,
+  `position_y` int(11) NOT NULL,
+  `z_index` int(11) DEFAULT 1,
+  `width` int(11) NOT NULL,
+  `height` int(11) NOT NULL,
+  `styles` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `content` longtext CHARACTER SET utf8mb4 COLLATE utf8mb4_bin DEFAULT NULL,
+  `created_at` timestamp NOT NULL DEFAULT current_timestamp()
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_general_ci;
 
 -- --------------------------------------------------------
@@ -251,9 +289,7 @@ CREATE TABLE `users` (
 INSERT INTO `users` (`id`, `username`, `email`, `password`, `first_name`, `last_name`, `bio`, `profile_image`, `cover_image`, `role`, `status`, `last_login`, `created_at`, `updated_at`, `gender`, `educational_background`, `profession`, `location`, `marital_status`) VALUES
 (1, 'admin', 'admin@example.com', '$2y$10$8zUl.e9WQYKGg7DFrDHnxeRwBkXQPQrKVwJwh1QnOxgbRXLSqjnVK', 'Admin', 'User', 'System administrator', '../assets/default_profile.png', 'default-cover.jpg', 'admin', 'active', NULL, '2025-05-06 16:47:08', '2025-05-13 08:47:48', 'unspecified', 'unspecified', 'unspecified', 'unspecified', 'unspecified'),
 (2, 'khiqyam', 'marianogalauran23@gmail.com', '$2y$10$opo1ipj6LEfbtmPUMCpjCe063lgRIGApJDUlvkPQA/x2GcwI.S7Na', 'Kenzo', 'Galauran', 'Student', 'uploads/2/GqtVdloX0AE5S2Q.jpg', 'uploads/2/sunsetz.png', 'subscriber', 'active', NULL, '2025-05-11 15:43:31', '2025-05-16 10:31:27', 'Male', 'Personal Project', 'Student', 'Taguig City, Metro Manila', 'Single'),
-(3, 'kenzo', 'kenzocutie@gmail.com', '$2y$10$gcRCf9bSlT1Ol9iMhEFSBublUMAYweQSrX1Lf4Slpcj0eFlSC1Xo6', 'Kenzo', 'Shirogane', NULL, '../assets/default_profile.png', 'default-cover.jpg', 'subscriber', 'active', NULL, '2025-05-11 16:14:14', '2025-05-13 08:48:11', 'unspecified', 'unspecified', 'unspecified', 'unspecified', 'unspecified'),
-(4, 'yuutajustforyou@gmal.com', '', '', NULL, NULL, NULL, '../assets/default_profile.png', '../assets/placeholder_cover.jpg', 'subscriber', 'active', NULL, '2025-05-16 09:25:33', '2025-05-16 09:25:33', 'Male', 'unspecified', 'unspecified', 'unspecified', 'unspecified'),
-(5, '', 'yuutajustforyou@gmail.com', '', NULL, NULL, NULL, '../assets/default_profile.png', '../assets/placeholder_cover.jpg', 'subscriber', 'active', NULL, '2025-05-16 09:27:09', '2025-05-16 09:27:09', 'Male', 'unspecified', 'unspecified', 'unspecified', 'unspecified');
+(3, 'kenzo', 'kenzocutie@gmail.com', '$2y$10$gcRCf9bSlT1Ol9iMhEFSBublUMAYweQSrX1Lf4Slpcj0eFlSC1Xo6', 'Kenzo', 'Shirogane', NULL, '../assets/default_profile.png', 'default-cover.jpg', 'subscriber', 'active', NULL, '2025-05-11 16:14:14', '2025-05-13 08:48:11', 'unspecified', 'unspecified', 'unspecified', 'unspecified', 'unspecified');
 
 --
 -- Indexes for dumped tables
@@ -272,6 +308,18 @@ ALTER TABLE `comments`
 --
 ALTER TABLE `components`
   ADD PRIMARY KEY (`id`);
+
+--
+-- Indexes for table `component_content`
+--
+ALTER TABLE `component_content`
+  ADD UNIQUE KEY `component_id` (`component_id`);
+
+--
+-- Indexes for table `component_styles`
+--
+ALTER TABLE `component_styles`
+  ADD UNIQUE KEY `component_id` (`component_id`);
 
 --
 -- Indexes for table `followers`
@@ -316,8 +364,7 @@ ALTER TABLE `pages`
 --
 ALTER TABLE `page_components`
   ADD PRIMARY KEY (`id`),
-  ADD KEY `page_id` (`page_id`),
-  ADD KEY `component_id` (`component_id`);
+  ADD KEY `page_id` (`page_id`);
 
 --
 -- Indexes for table `posts`
@@ -437,6 +484,18 @@ ALTER TABLE `comments`
   ADD CONSTRAINT `comments_ibfk_2` FOREIGN KEY (`user_id`) REFERENCES `users` (`id`) ON DELETE CASCADE;
 
 --
+-- Constraints for table `component_content`
+--
+ALTER TABLE `component_content`
+  ADD CONSTRAINT `fk_component_content` FOREIGN KEY (`component_id`) REFERENCES `page_components` (`id`) ON DELETE CASCADE;
+
+--
+-- Constraints for table `component_styles`
+--
+ALTER TABLE `component_styles`
+  ADD CONSTRAINT `fk_component_styles` FOREIGN KEY (`component_id`) REFERENCES `page_components` (`id`) ON DELETE CASCADE;
+
+--
 -- Constraints for table `followers`
 --
 ALTER TABLE `followers`
@@ -467,13 +526,6 @@ ALTER TABLE `notifications`
 --
 ALTER TABLE `pages`
   ADD CONSTRAINT `pages_ibfk_1` FOREIGN KEY (`author_id`) REFERENCES `users` (`id`) ON DELETE SET NULL;
-
---
--- Constraints for table `page_components`
---
-ALTER TABLE `page_components`
-  ADD CONSTRAINT `page_components_ibfk_1` FOREIGN KEY (`page_id`) REFERENCES `pages` (`id`) ON DELETE CASCADE,
-  ADD CONSTRAINT `page_components_ibfk_2` FOREIGN KEY (`component_id`) REFERENCES `components` (`id`) ON DELETE CASCADE;
 
 --
 -- Constraints for table `posts`
