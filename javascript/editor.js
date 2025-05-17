@@ -655,22 +655,23 @@ function addOption(type) {
     if(!currentSelectedElement) return;
     
     const container = currentSelectedElement.querySelector('.options-container') || 
-                     currentSelectedElement.querySelector('.dropdown-options');
+                     currentSelectedElement.querySelector('select');
     
     if(type === 'dropdown') {
         const newOption = document.createElement('option');
-        newOption.value = `option${container.children.length + 1}`;
-        newOption.textContent = `Option ${container.children.length + 1}`;
+        newOption.value = `option-${container.children.length + 1}`;
+        newOption.text = `Option ${container.children.length + 1}`;
         container.appendChild(newOption);
     } else {
         const newLabel = document.createElement('label');
         newLabel.style.display = 'flex';
         newLabel.style.alignItems = 'center';
         newLabel.style.gap = '6px';
+        const baseName = type === 'radio' ? `radio-group-${Date.now()}` : '';
         newLabel.innerHTML = `
             <input type="${type}" 
-                   name="${type === 'radio' ? 'radio-group' : ''}"
-                   value="option${container.children.length + 1}">
+                   name="${baseName}"
+                   value="option-${container.children.length + 1}">
             <span contenteditable>Option ${container.children.length + 1}</span>
         `;
         container.appendChild(newLabel);
@@ -774,22 +775,24 @@ document.getElementById('savePage').addEventListener('click', async () => {
 
             case 'radio':
             case 'checkbox':
-                const options = element.querySelectorAll('label');
+                const options = element.querySelectorAll('.options-container label');
                 content.options = Array.from(options).map(option => ({
-                    text: option.querySelector('span').innerText,
-                    value: option.querySelector('input').value, // Add this
+                    text: option.querySelector('span').textContent,
+                    value: option.querySelector('input').value,
                     checked: option.querySelector('input').checked,
-                    name: option.querySelector('input').name // For radio groups
+                    name: option.querySelector('input').name
                 }));
                 break;
+
+            // Update dropdown case to include selected state
             case 'dropdown':
                 const select = element.querySelector('select');
                 content.options = Array.from(select.options).map(opt => ({
-                    text: opt.textContent,
+                    text: opt.text,
                     value: opt.value,
                     selected: opt.selected
                 }));
-            break;
+                break;
 
             default:
                 styles.backgroundColor = computedStyle.backgroundColor;
@@ -859,17 +862,18 @@ async function loadPage(pageId) {
                             <label style="display:flex;align-items:center;gap:6px">
                                 <input type="${component.type}" 
                                     ${opt.checked ? 'checked' : ''}
-                                    name="${opt.name || 'radio-group'}" 
-                                    value="${opt.value || `option${i+1}`}>
+                                    name="${opt.name}" 
+                                    value="${opt.value}">
                                 <span contenteditable>${opt.text}</span>
                             </label>
                         `).join('');
                         break;
 
+                    // Update dropdown loading
                     case 'dropdown':
                         const select = el.querySelector('select');
                         select.innerHTML = component.content.options.map(opt => 
-                            `<option value="${opt.value}">${opt.text}</option>`
+                            `<option value="${opt.value}" ${opt.selected ? 'selected' : ''}>${opt.text}</option>`
                         ).join('');
                         break;
                     default:
