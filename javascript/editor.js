@@ -129,7 +129,6 @@ function createElement(type, x, y) {
         case "button":
         el.innerHTML = `
             <button style="width:100%;height:100%;
-                        background: transparent;
                         color: var(--btn-color, #333);
                         border: 1px solid #ddd;
                         cursor:pointer;
@@ -513,6 +512,56 @@ function showProperties(el) {
             </div>`;
     }
 
+    if(type === 'button') {
+    const btn = el.querySelector('button');
+    html += `
+        <div class="property-group">
+            <h4>Button</h4>
+            <label>Button Text: 
+                <input type="text" value="${btn.innerText}" id="propBtnText">
+            </label>
+            <label>Background Color: 
+                <input type="color" value="${getComputedStyle(btn).backgroundColor}" id="propBtnBg">
+            </label>
+        </div>`;
+    }
+
+    if(['radio', 'checkbox', 'dropdown'].includes(type)) {
+    html += `
+        <div class="property-group">
+            <h4>Options</h4>
+            ${Array.from(el.querySelectorAll('input, option')).map((opt, i) => `
+                <div class="option-item">
+                    <input type="text" 
+                           value="${opt.type === 'option' ? opt.text : opt.nextElementSibling.innerText}"
+                           data-index="${i}"
+                           style="flex:1">
+                </div>
+            `).join('')}
+            <div style="margin-top: 10px;">
+                <button onclick="addOption('${type}')">+ Add Option</button>
+                <button onclick="removeLastOption('${type}')">- Remove Last</button>
+            </div>
+        </div>`;
+}
+
+    // Add event listeners for option text changes
+    if(['radio', 'checkbox', 'dropdown'].includes(type)) {
+        propertyPanel.querySelectorAll('.option-item input').forEach((input, i) => {
+            input.addEventListener('input', (e) => {
+                const targetElement = el.querySelectorAll(type === 'dropdown' ? 'option' : 'span')[i];
+                if(type === 'dropdown') {
+                    targetElement.textContent = e.target.value;
+                } else {
+                    targetElement.textContent = e.target.value;
+                    // Update corresponding input value
+                    const input = targetElement.previousElementSibling;
+                    input.value = `option${i+1}`;
+                }
+            });
+        });
+    }
+
     html += `</div>`;
 
     propertyPanel.innerHTML = html;
@@ -534,6 +583,14 @@ function showProperties(el) {
 
     propertyPanel.querySelector('#propBgColor')?.addEventListener('input', (e) => {
         el.style.backgroundColor = e.target.value;
+    });
+
+    propertyPanel.querySelector('#propBtnText')?.addEventListener('input', (e) => {
+        el.querySelector('button').innerText = e.target.value;
+    });
+
+    propertyPanel.querySelector('#propBtnBg')?.addEventListener('input', (e) => {
+        el.querySelector('button').style.backgroundColor = e.target.value;
     });
 
     propertyPanel.querySelector('#propTextColor')?.addEventListener('input', (e) => {
@@ -602,6 +659,7 @@ function addOption(type) {
     
     if(type === 'dropdown') {
         const newOption = document.createElement('option');
+        newOption.value = `option${container.children.length + 1}`;
         newOption.textContent = `Option ${container.children.length + 1}`;
         container.appendChild(newOption);
     } else {
@@ -610,7 +668,9 @@ function addOption(type) {
         newLabel.style.alignItems = 'center';
         newLabel.style.gap = '6px';
         newLabel.innerHTML = `
-            <input type="${type === 'radio' ? 'radio' : 'checkbox'}">
+            <input type="${type}" 
+                   name="${type === 'radio' ? 'radio-group' : ''}"
+                   value="option${container.children.length + 1}">
             <span contenteditable>Option ${container.children.length + 1}</span>
         `;
         container.appendChild(newLabel);
@@ -673,9 +733,10 @@ document.getElementById('savePage').addEventListener('click', async () => {
             case 'button':
                 const button = element.querySelector('button');
                 styles.backgroundColor = getComputedStyle(button).backgroundColor;
-                styles.color = getComputedStyle(button).color;
-                content.text = button?.innerText || '';
+                styles.color = getComputedStyle(button).color; // Add this line
+                content.text = button.innerText;
                 break;
+
 
             case 'header':
                 const nav = element.querySelector('nav');
@@ -710,6 +771,25 @@ document.getElementById('savePage').addEventListener('click', async () => {
                 styles.border = computedStyle.border;
                 styles.padding = computedStyle.padding;
                 break;
+
+            case 'radio':
+            case 'checkbox':
+                const options = element.querySelectorAll('label');
+                content.options = Array.from(options).map(option => ({
+                    text: option.querySelector('span').innerText,
+                    value: option.querySelector('input').value, // Add this
+                    checked: option.querySelector('input').checked,
+                    name: option.querySelector('input').name // For radio groups
+                }));
+                break;
+            case 'dropdown':
+                const select = element.querySelector('select');
+                content.options = Array.from(select.options).map(opt => ({
+                    text: opt.textContent,
+                    value: opt.value,
+                    selected: opt.selected
+                }));
+            break;
 
             default:
                 styles.backgroundColor = computedStyle.backgroundColor;
@@ -759,13 +839,38 @@ async function loadPage(pageId) {
             Object.entries(component.styles).forEach(([prop, value]) => {
                 switch(component.type) {
                     case 'button':
-                        el.querySelector('button').style[prop] = value;
-                        break;
+                        const btn = el.querySelector('button');
+                        btn.innerText = component.content.text;
+                        btn.style.backgroundColor = component.styles.backgroundColor;
+                        btn.style.color = component.styles.color || '#333'; // Add this line
+                    break;
+
                     case 'header':
                         el.querySelector('nav').style[prop] = value;
                         break;
                     case 'image':
                         el.querySelector('div').style[prop] = value;
+                        break;
+                    
+                    case 'radio':
+                    case 'checkbox':
+                        const container = el.querySelector('.options-container');
+                        container.innerHTML = component.content.options.map((opt, i) => `
+                            <label style="display:flex;align-items:center;gap:6px">
+                                <input type="${component.type}" 
+                                    ${opt.checked ? 'checked' : ''}
+                                    name="${opt.name || 'radio-group'}" 
+                                    value="${opt.value || `option${i+1}`}>
+                                <span contenteditable>${opt.text}</span>
+                            </label>
+                        `).join('');
+                        break;
+
+                    case 'dropdown':
+                        const select = el.querySelector('select');
+                        select.innerHTML = component.content.options.map(opt => 
+                            `<option value="${opt.value}">${opt.text}</option>`
+                        ).join('');
                         break;
                     default:
                         el.style[prop] = value;
